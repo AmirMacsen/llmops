@@ -6,11 +6,14 @@ from internal.exception import CustomException
 from internal.router import Router
 from config import Config
 from pkg.response import Response, json, HttpCode
+from internal.model.app import App
+from pkg.sqlalchemy import SQLAlchemy
+
 
 
 class Http(Flask):
     """http服务器"""
-    def __init__(self, *args,config: Config, router:Router, **kwargs):
+    def __init__(self, *args,config: Config, db:SQLAlchemy,router:Router, **kwargs):
         super(Http, self).__init__(*args, **kwargs)
 
         # 加载配置
@@ -18,6 +21,12 @@ class Http(Flask):
 
         # 异常处理
         self.register_error_handler(Exception, self._register_error_handler)
+
+        # 初始化数据库
+        db.init_app(self)
+        with self.app_context():
+            _ = App()
+            db.create_all()
 
         # 注册路由
         router.register_router(self)
