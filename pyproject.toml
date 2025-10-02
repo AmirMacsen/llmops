@@ -8,5 +8,6 @@ dependencies = [
     "flask-wtf>=1.2.2",
     "injector>=0.22.0",
     "openai>=2.0.1",
+    "pytest>=8.4.2",
     "python-dotenv>=1.1.1",
 ]

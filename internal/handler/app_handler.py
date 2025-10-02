@@ -3,6 +3,7 @@ import os
 from flask import request
 from openai import OpenAI
 from internal.schema.app_schema import CompletionRequest
+from pkg.response import success_json, validate_error_json
 
 
 class AppHandler(object):
@@ -15,7 +16,7 @@ class AppHandler(object):
         """
         req = CompletionRequest()
         if not req.validate():
-            return req.errors
+            return validate_error_json(errors=req.errors)
         query = request.json.get('query')
 
         client = OpenAI(
@@ -31,7 +32,7 @@ class AppHandler(object):
             ],
         )
 
-        return response.choices[0].message.content
+        return success_json(response.choices[0].message.content)
 
     def ping(self):
         """测试方法"""
