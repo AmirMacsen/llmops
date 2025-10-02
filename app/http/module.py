@@ -1,3 +1,6 @@
+from flask_migrate import Migrate
+
+from internal.extension.migrate_extension import migrate
 from pkg.sqlalchemy import SQLAlchemy
 from injector import Module, Binder
 
@@ -8,3 +11,4 @@ class ExtensionModule(Module):
     """扩展模块的依赖注入"""
     def configure(self, binder: Binder):
         binder.bind(SQLAlchemy, to=db)
+        binder.bind(Migrate, to=migrate)

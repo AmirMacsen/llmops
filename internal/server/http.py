@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from flask_migrate import Migrate
 
 from internal.exception import CustomException
 from internal.router import Router
@@ -13,7 +14,14 @@ from pkg.sqlalchemy import SQLAlchemy
 
 class Http(Flask):
     """http服务器"""
-    def __init__(self, *args,config: Config, db:SQLAlchemy,router:Router, **kwargs):
+    def __init__(
+            self,
+            *args,
+            config: Config,
+            db:SQLAlchemy,
+            migrate:Migrate,
+            router:Router,
+            **kwargs):
         super(Http, self).__init__(*args, **kwargs)
 
         # 加载配置
@@ -24,9 +32,7 @@ class Http(Flask):
 
         # 初始化数据库
         db.init_app(self)
-        with self.app_context():
-            _ = App()
-            db.create_all()
+        migrate.init_app(self, db, directory='internal/migrations')
 
         # 注册路由
         router.register_router(self)
