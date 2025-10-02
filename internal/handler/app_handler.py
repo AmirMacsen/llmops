@@ -1,23 +1,26 @@
 import os
 
 from flask import request
-from flask.cli import load_dotenv
 from openai import OpenAI
+from internal.schema.app_schema import CompletionRequest
 
 
 class AppHandler(object):
     """应用处理类"""
 
-    def completion(self):
+    def  completion(self):
         """
         聊天接口
         :return:
         """
-        load_dotenv()
+        req = CompletionRequest()
+        if not req.validate():
+            return req.errors
         query = request.json.get('query')
 
         client = OpenAI(
-            base_url=os.getenv('OPENAI_API_URL'),
+            base_url=os.getenv('OPENAI_API_BASE_URL'),
+            api_key=os.getenv('OPENAI_API_KEY'),
         )
 
         response = client.chat.completions.create(
@@ -28,7 +31,6 @@ class AppHandler(object):
             ],
         )
 
-        print(response)
         return response.choices[0].message.content
 
     def ping(self):
